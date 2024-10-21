@@ -4,26 +4,29 @@ document.addEventListener('DOMContentLoaded', function() {
     form.addEventListener('submit', function(e) {
         e.preventDefault();
         
-        // Obtener los valores del formulario
-        const name = document.getElementById('name').value;
-        const email = document.getElementById('email').value;
-        const message = document.getElementById('message').value;
+        const formData = new FormData(form);
         
-        // Aquí puedes agregar validación adicional si lo deseas
-        
-        // Simulación de envío (reemplaza esto con tu lógica de envío real)
-        console.log('Enviando formulario...');
-        console.log('Nombre:', name);
-        console.log('Email:', email);
-        console.log('Mensaje:', message);
-        
-        // Simulación de respuesta del servidor
-        setTimeout(() => {
-            alert('¡Mensaje enviado con éxito!');
-            form.reset(); // Limpiar el formulario después del envío
-        }, 1000);
-        
-        // Aquí es donde normalmente enviarías los datos a tu servidor
-        // Puedes usar fetch() o axios para hacer una solicitud POST a tu backend
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'Accept': 'application/json'
+            }
+        }).then(response => {
+            if (response.ok) {
+                alert('¡Mensaje enviado con éxito!');
+                form.reset();
+            } else {
+                response.json().then(data => {
+                    if (Object.hasOwn(data, 'errors')) {
+                        alert(data["errors"].map(error => error["message"]).join(", "));
+                    } else {
+                        alert("Oops! Hubo un problema al enviar el formulario");
+                    }
+                })
+            }
+        }).catch(error => {
+            alert("Oops! Hubo un problema al enviar el formulario");
+        });
     });
 });
